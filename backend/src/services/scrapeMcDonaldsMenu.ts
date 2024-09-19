@@ -12,13 +12,19 @@ const scrapeMcDonaldsMenu = async (): Promise<void> => {
     const { data } = await axios.get(url);
     const $ = cheerio.load(data);
 
+    const getCategoryNameFromH4 = (elem: any): string => {
+      const name = $(elem).text().trim();
+      if (name === "Bees") return "Burgers";
+      return name;
+    };
+
     const categories: { [key: string]: string } = {};
     const restaurantId = RestaurantEnum.MCDONALDS;
 
     deleteAllCategories(restaurantId);
     const categoryElements = $("h4").toArray();
     for (const elem of categoryElements) {
-      const categoryName = $(elem).text().trim();
+      const categoryName = getCategoryNameFromH4(elem);
 
       if (categoryName && !categories[categoryName]) {
         const categoryId = await insertCategory({
@@ -35,7 +41,7 @@ const scrapeMcDonaldsMenu = async (): Promise<void> => {
     // Loop over the elements and group items under categories
     $("h4, tr").each((_, elem) => {
       if ($(elem).is("h4")) {
-        const categoryName = $(elem).text().trim();
+        const categoryName = getCategoryNameFromH4(elem);
         currentCategoryId = categories[categoryName] || null;
       } else if ($(elem).is("tr") && currentCategoryId) {
         const itemName = $(elem).find(".column-1").text().trim();
