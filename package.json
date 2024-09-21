@@ -1,0 +1,6 @@
+{
+  "name": "root-redirect",
+  "scripts": {
+    "start": "cd backend && npm install && npm start"
+  }
+}
