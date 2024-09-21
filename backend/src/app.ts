@@ -29,9 +29,14 @@ app.use("/scrape", (req, res) => {
   if (apiKey === `Bearer ${validApiKey}`) {
     scrapeWendysMenu();
     scrapeMcDonaldsMenu();
-    res.send("Scraping menus...");
+    res.respond(true, "Scraping initiated");
   } else {
-    res.status(401).send("Unauthorized");
+    res.respond(false, "Unauthorized", null, [
+      {
+        field: "apiKey",
+        message: "Invalid API key",
+      },
+    ]);
   }
 });
 
