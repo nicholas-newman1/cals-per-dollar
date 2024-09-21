@@ -16,9 +16,9 @@ module.exports = {
   },
   production: {
     client: "mysql2",
-    connection: process.env.CLEARDB_DATABASE_URL, // Use Heroku's env variable
+    connection: process.env.CLEARDB_DATABASE_URL,
     migrations: {
-      tableName: "knex_migrations",
+      tableName: "cpd_knex_migrations",
       directory: "./migrations",
     },
   },

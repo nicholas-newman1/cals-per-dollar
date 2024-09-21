@@ -8,7 +8,7 @@ export const searchMenuItems = async (
 ): Promise<MenuItemEntity[]> => {
   return new Promise((resolve, reject) => {
     db.query(
-      `SELECT * FROM menu_items WHERE name LIKE ? ${
+      `SELECT * FROM cpd_menu_items WHERE name LIKE ? ${
         restaurant ? "AND restaurant_id = ?" : ""
       }`,
       [`%${query}%`, restaurant],
@@ -21,7 +21,7 @@ export const searchMenuItems = async (
 export const insertMenuItems = async (items: MenuItemDto[]): Promise<void> => {
   return new Promise((resolve, reject) => {
     db.query(
-      "INSERT INTO menu_items (name, price, calories, restaurant_id, category_id) VALUES ?",
+      "INSERT INTO cpd_menu_items (name, price, calories, restaurant_id, category_id) VALUES ?",
       [items.map((item) => Object.values(item))],
       (err) => (err ? reject(err) : resolve())
     );
@@ -34,7 +34,7 @@ export const deleteAllMenuItems = async (
   return new Promise((resolve, reject) => {
     if (restaurantId) {
       db.query(
-        "DELETE FROM menu_items WHERE restaurant_id = ?",
+        "DELETE FROM cpd_menu_items WHERE restaurant_id = ?",
         [restaurantId],
         (err) => (err ? reject(err) : resolve())
       );
@@ -58,7 +58,7 @@ export const getTopCaloriesPerDollarForEachCategory = async (
   const promises = categoryIds.map((categoryId) => {
     return new Promise((resolve, reject) => {
       db.query(
-        "SELECT * FROM menu_items WHERE category_id = ? ORDER BY calories / price DESC",
+        "SELECT * FROM cpd_menu_items WHERE category_id = ? ORDER BY calories / price DESC",
         [categoryId],
         (err, results) =>
           err
@@ -72,7 +72,7 @@ export const getTopCaloriesPerDollarForEachCategory = async (
   promises.unshift(
     new Promise((resolve, reject) => {
       db.query(
-        "SELECT * FROM menu_items WHERE restaurant_id = ? ORDER BY calories / price DESC",
+        "SELECT * FROM cpd_menu_items WHERE restaurant_id = ? ORDER BY calories / price DESC",
         [restaurantId],
         (err, results) =>
           err

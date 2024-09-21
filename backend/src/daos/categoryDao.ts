@@ -6,7 +6,7 @@ export const insertCategory = async (
 ): Promise<string> => {
   return new Promise((resolve, reject) => {
     db.query(
-      "INSERT INTO categories (name, restaurant_id) VALUES (?, ?)",
+      "INSERT INTO cpd_categories (name, restaurant_id) VALUES (?, ?)",
       [category.name, category.restaurantId],
       (err, result) => (err ? reject(err) : resolve((result as any).insertId))
     );
@@ -18,7 +18,7 @@ export const deleteAllCategories = async (
 ): Promise<void> => {
   return new Promise((resolve, reject) => {
     db.query(
-      "DELETE FROM categories WHERE restaurant_id = ?",
+      "DELETE FROM cpd_categories WHERE restaurant_id = ?",
       [restaurantId],
       (err) => (err ? reject(err) : resolve())
     );
@@ -30,7 +30,7 @@ export const getCategoriesByRestaurant = async (
 ): Promise<CategoryEntity[]> => {
   return new Promise((resolve, reject) => {
     db.query(
-      "SELECT * FROM categories WHERE restaurant_id = ?",
+      "SELECT * FROM cpd_categories WHERE restaurant_id = ?",
       [restaurantId],
       (err, results) =>
         err ? reject(err) : resolve(results as CategoryEntity[])
