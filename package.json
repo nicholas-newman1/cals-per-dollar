@@ -1,8 +1,6 @@
 {
   "name": "root-redirect",
   "scripts": {
-    "start": "cd backend && npm install && npx knex migrate:latest && npm run build && cd dist && node server.js",
-    "scrape-mcdonalds": "node backend/dist/services/scapeMcDonaldsMenu.js",
-    "scrape-wendys": "node backend/dist/services/scrapeWendysMenu.js"
+    "start": "cd backend && npm install && npx knex migrate:latest && npm run build && cd dist && node server.js"
   }
 }
