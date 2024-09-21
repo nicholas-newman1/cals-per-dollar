@@ -3,13 +3,17 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: parseInt(process.env.DB_PORT || "3306", 10),
-});
+const dbUrl = process.env.CLEARDB_DATABASE_URL;
+
+const db = dbUrl
+  ? mysql.createConnection(dbUrl)
+  : mysql.createConnection({
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      port: parseInt(process.env.DB_PORT || "3306", 10),
+    });
 
 db.connect((err) => {
   if (err) {
