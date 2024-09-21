@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from "express";
+import path from "path";
 import menuItemsRoutes from "./routes/menuItemsRoutes";
 import restaurantsRoutes from "./routes/restaurantsRoutes";
 import { createResponse, ValidationError } from "./utils/responseUtil";
@@ -21,6 +22,15 @@ app.use((_req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use(express.json());
+
+// Serve the static files from the React app
+app.use(express.static(path.join(__dirname, "../frontend/build")));
+
+// Handle any requests that don't match the API routes by serving the React app
+app.get("*", (_, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
+});
+
 app.use("/api/menu-items", menuItemsRoutes);
 app.use("/api/restaurants", restaurantsRoutes);
 app.use("/scrape", (req, res) => {
