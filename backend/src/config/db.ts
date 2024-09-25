@@ -13,6 +13,7 @@ const db = dbUrl
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       port: parseInt(process.env.DB_PORT || "3306", 10),
+      keepAliveInitialDelay: 10000
     });
 
 db.connect((err) => {
