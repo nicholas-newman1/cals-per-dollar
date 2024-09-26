@@ -1,21 +1,8 @@
 import db from "../config/db";
 import { RestaurantEntity } from "../types/restaurant";
 
-export const getRestaurantById = async (id: string) => {
-  return new Promise((resolve, reject) => {
-    db.query(
-      "SELECT * FROM cpd_restaurants WHERE id = ?",
-      [id],
-      (err, results) =>
-        err ? reject(err) : resolve((results as RestaurantEntity[])[0])
-    );
-  });
-};
+export const getRestaurantById = async (id: string) =>
+  await db<RestaurantEntity>("cpd_restaurants").where("id", id).first();
 
-export const getAllRestaurants = async () => {
-  return new Promise((resolve, reject) => {
-    db.query("SELECT * FROM cpd_restaurants", (err, results) =>
-      err ? reject(err) : resolve(results as RestaurantEntity[])
-    );
-  });
-};
+export const getAllRestaurants = async () =>
+  await db<RestaurantEntity>("cpd_restaurants").select("*");

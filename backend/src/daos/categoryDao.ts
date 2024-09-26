@@ -1,39 +1,19 @@
 import db from "../config/db";
 import { CategoryDto, CategoryEntity } from "../types/categories";
 
-export const insertCategory = async (
-  category: CategoryDto
-): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    db.query(
-      "INSERT INTO cpd_categories (name, restaurant_id) VALUES (?, ?)",
-      [category.name, category.restaurantId],
-      (err, result) => (err ? reject(err) : resolve((result as any).insertId))
-    );
+export const insertCategory = async (category: CategoryDto) => {
+  const [insertId] = await db("cpd_categories").insert({
+    name: category.name,
+    restaurant_id: category.restaurantId,
   });
+
+  return insertId;
 };
 
-export const deleteAllCategories = async (
-  restaurantId: string
-): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    db.query(
-      "DELETE FROM cpd_categories WHERE restaurant_id = ?",
-      [restaurantId],
-      (err) => (err ? reject(err) : resolve())
-    );
-  });
-};
+export const deleteAllCategories = async (restaurantId: string) =>
+  await db("cpd_categories").where("restaurant_id", restaurantId).del();
 
-export const getCategoriesByRestaurant = async (
-  restaurantId: string
-): Promise<CategoryEntity[]> => {
-  return new Promise((resolve, reject) => {
-    db.query(
-      "SELECT * FROM cpd_categories WHERE restaurant_id = ?",
-      [restaurantId],
-      (err, results) =>
-        err ? reject(err) : resolve(results as CategoryEntity[])
-    );
-  });
-};
+export const getCategoriesByRestaurant = async (restaurantId: string) =>
+  await db<CategoryEntity>("cpd_categories")
+    .where("restaurant_id", restaurantId)
+    .select("*");

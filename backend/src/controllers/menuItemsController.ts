@@ -20,6 +20,8 @@ export const searchItems = async (req: Request, res: Response) => {
 
     const menuItems = await MenuItemDao.searchMenuItems(query, restaurant);
 
+    console.log(menuItems);
+
     if (!menuItems.length) {
       return res.respond(true, "No menu items found for the given query", []);
     }
