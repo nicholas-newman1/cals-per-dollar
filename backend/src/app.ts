@@ -6,6 +6,8 @@ import { createResponse, ValidationError } from "./utils/responseUtil";
 import errorHandler from "./middlewares/errorHandler";
 import scrapeMcDonaldsMenu from "./services/scrapeMcDonaldsMenu";
 import scrapeWendysMenu from "./services/scrapeWendysMenu";
+import scrapeBurgerKingMenu from "./services/scrapeBurgerKingMenu";
+import RestaurantEnum from "./types/restaurantEnum";
 
 const app = express();
 
@@ -29,8 +31,10 @@ app.use("/scrape", (req, res) => {
   const apiKey = req.headers["authorization"];
   const validApiKey = process.env.ADMIN_API_KEY;
   if (apiKey === `Bearer ${validApiKey}`) {
-    scrapeWendysMenu();
-    scrapeMcDonaldsMenu();
+    const ids = req.body.restaurantIds;
+    ids?.includes(RestaurantEnum.MCDONALDS) && scrapeMcDonaldsMenu();
+    ids?.includes(RestaurantEnum.WENDYS) && scrapeWendysMenu();
+    ids?.includes(RestaurantEnum.BURGER_KING) && scrapeBurgerKingMenu();
     res.respond(true, "Scraping initiated");
   } else {
     res.respond(false, "Unauthorized", null, [

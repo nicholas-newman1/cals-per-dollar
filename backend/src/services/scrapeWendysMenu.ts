@@ -15,7 +15,11 @@ const scrapeWendysMenu = async (): Promise<void> => {
     const categories: { [key: string]: string } = {};
     const restaurantId = RestaurantEnum.WENDYS;
 
-    deleteAllCategories(restaurantId);
+    await Promise.all([
+      deleteAllMenuItems(restaurantId),
+      deleteAllCategories(restaurantId),
+    ]);
+
     const categoryElements = $("h3").toArray();
     for (const elem of categoryElements) {
       const categoryName = $(elem).text().trim();
@@ -99,7 +103,6 @@ const scrapeWendysMenu = async (): Promise<void> => {
       }
     });
 
-    await deleteAllMenuItems(RestaurantEnum.WENDYS);
     insertMenuItems(items);
 
     console.log(
