@@ -10,6 +10,7 @@ import {
 import styled from "@emotion/styled";
 import { AttachMoney, FastForward, Lightbulb } from "@mui/icons-material";
 import { Link } from "react-router-dom";
+import theme from "../../theme";
 
 const PaddedBox = styled(Box)`
   padding: 6rem 0;
@@ -98,7 +99,8 @@ const About: React.FC = () => {
           </Grid>
         </Container>
       </HeroGrid>
-      <PaddedBox>
+
+      <PaddedBox sx={{ backgroundColor: theme.palette.background.paper }}>
         <Container maxWidth="sm">
           <Heading>Our Mission</Heading>
           <Typography variant="body1" textAlign="center">
@@ -110,10 +112,10 @@ const About: React.FC = () => {
           </Typography>
         </Container>
       </PaddedBox>
-      <PaddedBox sx={{ backgroundColor: "#e3ffe5" }}>
+
+      <PaddedBox>
         <Container maxWidth="lg">
           <Heading>How It Works</Heading>
-
           <Grid item container xs={12} spacing={6}>
             <Grid item xs={12} md={4}>
               <StyledImg
@@ -155,7 +157,7 @@ const About: React.FC = () => {
         </Container>
       </PaddedBox>
 
-      <PaddedBox>
+      <PaddedBox sx={{ backgroundColor: theme.palette.background.paper }}>
         <Container maxWidth="lg">
           <Heading>Why Use CalsPerDollar?</Heading>
           <Grid item container xs={12} spacing={6}>
@@ -224,7 +226,7 @@ const About: React.FC = () => {
         </Container>
       </PaddedBox>
 
-      <PaddedBox sx={{ backgroundColor: "#e3ffe5" }}>
+      <PaddedBox>
         <Container maxWidth="lg">
           <Heading>Start Saving on Meals Today</Heading>
           <Typography
