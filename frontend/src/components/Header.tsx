@@ -1,5 +1,5 @@
 import { AppBar, Grid, Typography } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import theme from "../theme";
 
 interface NavItemProps {
@@ -8,6 +8,8 @@ interface NavItemProps {
 }
 
 const NavItem: React.FC<NavItemProps> = ({ to, children }) => {
+  const location = useLocation();
+  const isActive = location.pathname === to;
   return (
     <Grid item>
       <Link to={to} style={{ textDecoration: "none" }}>
@@ -15,6 +17,13 @@ const NavItem: React.FC<NavItemProps> = ({ to, children }) => {
           fontWeight="700"
           variant="body1"
           color={theme.palette.text.primary}
+          sx={{
+            borderBottom: `2px solid ${
+              isActive ? theme.palette.primary.main : "transparent"
+            }`,
+            padding: "0.5rem 0",
+            transition: "border-color 0.2s",
+          }}
         >
           {children}
         </Typography>
@@ -64,7 +73,7 @@ const Header = () => {
       <div>
         <Grid container direction="row" wrap="nowrap" spacing={2}>
           <NavItem to="/">Home</NavItem>
-          <NavItem to="/about">About</NavItem>
+          <NavItem to="/browse">Browse</NavItem>
         </Grid>
       </div>
     </AppBar>
