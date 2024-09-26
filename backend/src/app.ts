@@ -8,6 +8,7 @@ import scrapeMcDonaldsMenu from "./services/scrapeMcDonaldsMenu";
 import scrapeWendysMenu from "./services/scrapeWendysMenu";
 import scrapeBurgerKingMenu from "./services/scrapeBurgerKingMenu";
 import RestaurantEnum from "./types/restaurantEnum";
+import scrapeTacoBellMenu from "./services/scrapeTacoBellMenu";
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use("/scrape", (req, res) => {
     ids?.includes(RestaurantEnum.MCDONALDS) && scrapeMcDonaldsMenu();
     ids?.includes(RestaurantEnum.WENDYS) && scrapeWendysMenu();
     ids?.includes(RestaurantEnum.BURGER_KING) && scrapeBurgerKingMenu();
+    ids?.includes(RestaurantEnum.TACO_BELL) && scrapeTacoBellMenu();
     res.respond(true, "Scraping initiated");
   } else {
     res.respond(false, "Unauthorized", null, [
