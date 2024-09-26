@@ -1,5 +1,4 @@
 import {
-  Grid,
   Typography,
   TableContainer,
   Paper,
@@ -9,6 +8,7 @@ import {
   TableCell,
   TableBody,
   Button,
+  Container,
 } from "@mui/material";
 import React, { useState } from "react";
 import { GetTopCaloriesPerDollarForEachCategoryByRestaurantResponse } from "./types";
@@ -29,14 +29,8 @@ const CategoryTable: React.FC<Props> = ({ category }) => {
   const visibleItems = category.items.slice(0, visibleCount);
 
   return (
-    <Grid
-      container
-      item
-      xs={12}
-      key={category.categoryId}
-      justifyContent="center"
-    >
-      <Typography variant="h4" textAlign="center" sx={{ marginTop: "6rem" }}>
+    <Container maxWidth="md">
+      <Typography variant="h4" textAlign="center" sx={{ marginTop: "4rem" }}>
         {category.categoryName}
       </Typography>
       <TableContainer
@@ -84,11 +78,15 @@ const CategoryTable: React.FC<Props> = ({ category }) => {
         </Table>
       </TableContainer>
       {category.items.length > visibleCount && (
-        <Button variant="contained" onClick={handleShowMore}>
+        <Button
+          variant="contained"
+          sx={{ margin: "0 auto", display: "block" }}
+          onClick={handleShowMore}
+        >
           See More
         </Button>
       )}
-    </Grid>
+    </Container>
   );
 };
 

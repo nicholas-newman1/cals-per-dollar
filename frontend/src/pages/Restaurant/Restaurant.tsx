@@ -96,15 +96,25 @@ const RestaurantPage = () => {
       {menuItemsLoading ? (
         <Loader />
       ) : (
-        <Container maxWidth="md">
-          <Grid container>
-            {categories
-              ?.filter((category) => category.items.length)
-              .map((category) => (
+        <Grid container direction="column">
+          {categories
+            ?.filter((category) => category.items.length)
+            .map((category, i) => (
+              <Grid
+                item
+                key={category.categoryId}
+                sx={{
+                  backgroundColor:
+                    i % 2 === 0
+                      ? theme.palette.background.paper
+                      : theme.palette.background.default,
+                  paddingBottom: "4rem",
+                }}
+              >
                 <CategoryTable key={category.categoryId} category={category} />
-              ))}
-          </Grid>
-        </Container>
+              </Grid>
+            ))}
+        </Grid>
       )}
     </div>
   );
