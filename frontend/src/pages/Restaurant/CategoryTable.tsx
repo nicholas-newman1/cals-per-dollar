@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import React, { useState } from "react";
 import { GetTopCaloriesPerDollarForEachCategoryByRestaurantResponse } from "./types";
+import theme from "../../theme";
 
 interface Props {
   category: GetTopCaloriesPerDollarForEachCategoryByRestaurantResponse;
@@ -36,22 +37,27 @@ const CategoryTable: React.FC<Props> = ({ category }) => {
       <TableContainer
         component={Paper}
         elevation={12}
-        sx={{ margin: "1rem 0" }}
+        sx={{
+          margin: "1rem 0",
+          backgroundColor: theme.palette.background.paper,
+        }}
       >
         <Table>
           <TableHead>
             <TableRow>
               <TableCell sx={{ width: "100%" }}>
-                <Typography variant="h6">Item</Typography>
+                <Typography>Item</Typography>
               </TableCell>
-              <TableCell>
+              <TableCell
+                sx={{ backgroundColor: theme.palette.background.default }}
+              >
                 <Typography variant="h6">CPD</Typography>
               </TableCell>
               <TableCell>
-                <Typography variant="h6">Price</Typography>
+                <Typography variant="body1">Price</Typography>
               </TableCell>
               <TableCell>
-                <Typography variant="h6">Calories</Typography>
+                <Typography variant="body1">Cals</Typography>
               </TableCell>
             </TableRow>
           </TableHead>
@@ -59,18 +65,20 @@ const CategoryTable: React.FC<Props> = ({ category }) => {
             {visibleItems.map((item) => (
               <TableRow key={item.name}>
                 <TableCell>
-                  <Typography variant="body1">{item.name}</Typography>
+                  <Typography variant="body2">{item.name}</Typography>
                 </TableCell>
-                <TableCell>
-                  <Typography variant="body1">
+                <TableCell
+                  sx={{ backgroundColor: theme.palette.background.default }}
+                >
+                  <Typography fontWeight="bold">
                     {(item.calories / item.price).toFixed(0)}
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography variant="body1">${item.price}</Typography>
+                  <Typography variant="body2">${item.price}</Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography variant="body1">{item.calories}</Typography>
+                  <Typography variant="body2">{item.calories}</Typography>
                 </TableCell>
               </TableRow>
             ))}
