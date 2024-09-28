@@ -46,11 +46,12 @@ const CustomSearchInput: React.FC<CustomSearchInputProps> = ({
         onBlur={onBlur}
         placeholder={placeholder}
         style={{
+          fontFamily: theme.typography.fontFamily,
           border: "none",
           outline: "none",
           flex: 1,
           padding: "10px",
-          fontSize: "16px",
+          fontSize: "0.95rem",
           borderRadius: "25px",
           backgroundColor: theme.palette.background.paper,
         }}
