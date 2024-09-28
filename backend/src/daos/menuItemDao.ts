@@ -4,7 +4,7 @@ import RestaurantEnum from "../types/restaurantEnum";
 
 export const searchMenuItems = async (query: string, restaurant?: string) =>
   await db<MenuItemEntity>("cpd_menu_items")
-    .where("name", "like", `%${query}%`)
+    .whereRaw("MATCH(name) AGAINST(? IN BOOLEAN MODE)", [`${query}*`])
     .modify((qb) => {
       if (restaurant) {
         qb.andWhere("restaurant_id", restaurant);

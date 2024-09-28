@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, InputAdornment, IconButton } from "@mui/material";
+import { Box, InputAdornment, IconButton, useTheme } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
 interface CustomSearchInputProps {
@@ -17,13 +17,14 @@ const CustomSearchInput: React.FC<CustomSearchInputProps> = ({
   onFocus,
   onBlur,
 }) => {
+  const theme = useTheme();
   return (
     <Box
       sx={{
         position: "relative",
         display: "flex",
         alignItems: "center",
-        backgroundColor: "#fff",
+        backgroundColor: theme.palette.background.paper,
         borderRadius: "8px",
         border: "1px solid #ccc",
         padding: "0 10px",
@@ -51,6 +52,7 @@ const CustomSearchInput: React.FC<CustomSearchInputProps> = ({
           padding: "10px",
           fontSize: "16px",
           borderRadius: "25px",
+          backgroundColor: theme.palette.background.paper,
         }}
       />
     </Box>

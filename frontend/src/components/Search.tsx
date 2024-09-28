@@ -1,11 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import {
-  Paper,
-  List,
-  ListItem,
-  CircularProgress,
-  ListItemButton,
-} from "@mui/material";
+import { Paper, List, ListItem, CircularProgress } from "@mui/material";
 import makeRequest from "../utils/makeRequest";
 import CustomSearchInput from "./CustomSearchInput";
 
@@ -29,12 +23,14 @@ interface Props {
   endpoint: string;
   placeholder?: string;
   params?: Record<string, any>;
+  ResultComponent: React.FC<any>;
 }
 
 const Search: React.FC<Props> = ({
   endpoint,
   placeholder = "Search",
   params = {},
+  ResultComponent,
 }) => {
   const [query, setQuery] = useState<string>("");
   const [results, setResults] = useState<any[]>([]);
@@ -79,12 +75,21 @@ const Search: React.FC<Props> = ({
     setOpen(false);
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+
+    if (!e.target.value) {
+      setOpen(false);
+      setResults([]);
+    }
+  };
+
   return (
     <div style={{ position: "relative", width: "100%" }}>
       <CustomSearchInput
         placeholder={placeholder}
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={handleChange}
         onFocus={() => setOpen(!!results.length)}
         onBlur={handleClose}
       />
@@ -110,13 +115,8 @@ const Search: React.FC<Props> = ({
           ) : (
             <List>
               {results.length > 0 ? (
-                results.map((result, index) => (
-                  <ListItemButton
-                    key={index}
-                    onClick={() => alert(`Selected: ${result.name}`)}
-                  >
-                    {result.name}
-                  </ListItemButton>
+                results.map((result) => (
+                  <ResultComponent {...result} key={result.id} />
                 ))
               ) : (
                 <ListItem>No results found</ListItem>

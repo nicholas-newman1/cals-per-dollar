@@ -12,9 +12,13 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-// import Search from "../../components/Search";
+import Search from "../../components/Search";
 import theme from "../../theme";
-import CategoryTable from "./CategoryTable";
+import RestaurantSearchResult from "./components/RestaurantSearchResult";
+import CategoryTable from "./components/CategoryTable";
+import { useNavigate } from "react-router-dom";
+import { IconButton } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const HeroGrid = styled(Grid)`
   background-size: cover;
@@ -44,6 +48,7 @@ const ReadableTypography = styled(Typography)`
 `;
 
 const RestaurantPage = () => {
+  const navigate = useNavigate();
   const isSmDown = useMediaQuery(theme.breakpoints.down("sm"));
   const isMdDown = useMediaQuery(theme.breakpoints.down("md"));
   const { id } = useParams<{ id: string }>();
@@ -70,6 +75,17 @@ const RestaurantPage = () => {
         justifyContent="center"
         sx={{ backgroundImage: `url(/assets/restaurants/${id}.jpg)` }}
       >
+        <IconButton
+          sx={{
+            position: "absolute",
+            top: "2rem",
+            left: "2rem",
+            color: "white",
+          }}
+          onClick={() => navigate(-1)}
+        >
+          <ArrowBackIcon />
+        </IconButton>
         <Container maxWidth="lg">
           <Grid item container xs={12} spacing={2} justifyContent="center">
             <Grid item xs={12}>
@@ -81,15 +97,16 @@ const RestaurantPage = () => {
               </ReadableTypography>
             </Grid>
 
-            {/* <Grid item xs={12}>
-              <Container maxWidth="xs">
+            <Grid item xs={12}>
+              <Container maxWidth="sm">
                 <Search
                   placeholder={`Search ${restaurant?.name} Menu`}
                   endpoint="/menu-items/v1/search"
                   params={{ restaurant: id }}
+                  ResultComponent={RestaurantSearchResult}
                 />
               </Container>
-            </Grid> */}
+            </Grid>
           </Grid>
         </Container>
       </HeroGrid>

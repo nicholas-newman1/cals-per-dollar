@@ -11,8 +11,8 @@ import {
   Container,
 } from "@mui/material";
 import React, { useState } from "react";
-import { GetTopCaloriesPerDollarForEachCategoryByRestaurantResponse } from "./types";
-import theme from "../../theme";
+import { GetTopCaloriesPerDollarForEachCategoryByRestaurantResponse } from "../types";
+import theme from "../../../theme";
 
 interface Props {
   category: GetTopCaloriesPerDollarForEachCategoryByRestaurantResponse;

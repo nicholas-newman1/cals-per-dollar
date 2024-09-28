@@ -8,8 +8,9 @@ interface NavItemProps {
 }
 
 const NavItem: React.FC<NavItemProps> = ({ to, children }) => {
-  const location = useLocation();
-  const isActive = location.pathname === to;
+  const path = useLocation().pathname;
+  const isActive = path === to || path.startsWith(to + "/");
+
   return (
     <Grid item>
       <Link to={to} style={{ textDecoration: "none" }}>

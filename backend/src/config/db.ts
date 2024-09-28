@@ -13,6 +13,7 @@ const db = knex({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     port: parseInt(process.env.DB_PORT || "3306", 10),
+    decimalNumbers: true,
   },
   pool: { min: 2, max: 10 },
 });
