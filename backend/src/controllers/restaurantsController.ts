@@ -1,16 +1,13 @@
 import { Request, Response } from "express";
 import * as RestaurantsDao from "../daos/restaurantsDao";
+import { GetByIdSchema } from "../schemas/common/getByIdSchema";
 
-export const getRestaurantById = async (req: Request, res: Response) => {
+export const getRestaurantById = async (
+  req: Request<any, any, any, GetByIdSchema>,
+  res: Response
+) => {
   try {
-    const id = req.query.id;
-
-    if (typeof id !== "string") {
-      return res.respond(false, "Restaurant ID is required", null, [
-        { field: "id", message: "Restaurant ID is required" },
-      ]);
-    }
-
+    const { id } = req.query;
     const restaurant = await RestaurantsDao.getRestaurantById(id);
 
     if (!restaurant) {

@@ -1,4 +1,13 @@
-import { ValidationError } from "../utils/responseUtil";
+import "express";
+import { ValidationError } from "./utils/responseUtil";
+
+declare module "express" {
+  interface Request {
+    locals?: {
+      validatedData?: Record<string, any>;
+    };
+  }
+}
 
 declare module "express-serve-static-core" {
   interface Response {

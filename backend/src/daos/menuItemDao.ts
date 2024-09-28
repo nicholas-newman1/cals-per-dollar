@@ -35,7 +35,7 @@ export const getTopCaloriesPerDollarForEachCategory = async (
     db<MenuItemEntity>("cpd_menu_items")
       .where("restaurant_id", restaurantId)
       .orderByRaw("calories / price desc")
-      .then((items) => ({ categoryName: "Overall", items })),
+      .then((items) => ({ categoryName: "Overall", categoryId: "", items })),
 
     ...categoryIds.map(async (categoryId) => {
       const items = await db<MenuItemEntity>("cpd_menu_items")

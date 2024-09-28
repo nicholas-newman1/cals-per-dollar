@@ -34,7 +34,7 @@ const scrapeWendysMenu = async (): Promise<void> => {
           name: categoryName,
           restaurantId,
         });
-        categories[categoryName] = categoryId;
+        categories[categoryName] = String(categoryId);
       }
     }
 

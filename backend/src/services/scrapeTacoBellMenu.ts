@@ -50,7 +50,7 @@ const scrapeTacoBellMenu = async (): Promise<void> => {
           name: categoryName,
           restaurantId,
         });
-        categories[categoryName] = categoryId;
+        categories[categoryName] = String(categoryId);
       }
     }
 

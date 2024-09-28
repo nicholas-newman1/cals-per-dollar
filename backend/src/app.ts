@@ -9,6 +9,7 @@ import scrapeWendysMenu from "./services/scrapeWendysMenu";
 import scrapeBurgerKingMenu from "./services/scrapeBurgerKingMenu";
 import RestaurantEnum from "./types/restaurantEnum";
 import scrapeTacoBellMenu from "./services/scrapeTacoBellMenu";
+import "./globalTypes";
 
 const app = express();
 
