@@ -5,6 +5,6 @@
     "heroku-postbuild": "cd frontend && npm install && npm run build"
   },
   "dependencies": {
-    "aws-cli-js": "^2.2.3"
+    "aws-sdk": "^2.1691.0"
   }
 }
