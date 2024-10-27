@@ -19,27 +19,9 @@ const LogoLink: React.FC<{ centered?: boolean }> = ({ centered }) => (
     to="/"
     style={{ textDecoration: "none", margin: centered ? "0 auto" : undefined }}
   >
-    <Grid
-      container
-      direction="row"
-      wrap="nowrap"
-      alignItems="center"
-      spacing={1}
-    >
-      <Grid item>
-        <img
-          src="/assets/cals-per-dollar.svg"
-          alt="CalsPerDollar Logo"
-          style={{ height: "2rem" }}
-        />
-      </Grid>
-
-      <Grid item>
-        <Typography variant="h5" color={theme.palette.text.primary}>
-          CalsPerDollar
-        </Typography>
-      </Grid>
-    </Grid>
+    <Typography variant="h5" color={theme.palette.text.primary}>
+      CalsPerDollar
+    </Typography>
   </Link>
 );
 
