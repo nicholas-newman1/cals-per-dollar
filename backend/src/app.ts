@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import path from "path";
+import cron from "node-cron";
 import menuItemsRoutes from "./routes/menuItemsRoutes";
 import restaurantsRoutes from "./routes/restaurantsRoutes";
 import { createResponse, ValidationError } from "./utils/responseUtil";
@@ -10,6 +11,7 @@ import scrapeBurgerKingMenu from "./services/scrapeBurgerKingMenu";
 import RestaurantEnum from "./types/restaurantEnum";
 import scrapeTacoBellMenu from "./services/scrapeTacoBellMenu";
 import "./globalTypes";
+import databaseBackup from "./scripts/databaseBackup";
 
 const app = express();
 
@@ -48,6 +50,26 @@ app.use("/scrape", (req, res) => {
     ]);
   }
 });
+
+app.use("/api/backup", async (_, res) => {
+  const apiKey = res.req?.headers["authorization"];
+  const validApiKey = process.env.ADMIN_API_KEY;
+  if (apiKey === `Bearer ${validApiKey}`) {
+    try {
+      await databaseBackup();
+      res.respond(true, "Database backup initiated");
+    } catch (error) {
+      res.respond(false, "Database backup failed", null, [
+        { field: "database", message: "Backup failed" },
+      ]);
+    }
+  } else {
+    res.respond(false, "Unauthorized", null, [
+      { field: "apiKey", message: "Invalid API key" },
+    ]);
+  }
+});
+cron.schedule("0 0 * * *", () => databaseBackup());
 
 // Serve the static files from the React app
 app.use(express.static(path.join(__dirname, "../../frontend/build")));
