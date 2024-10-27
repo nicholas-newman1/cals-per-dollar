@@ -3,8 +3,5 @@
   "scripts": {
     "start": "cd backend && npm install && npx knex migrate:latest && npm run build && cd dist && node server.js",
     "heroku-postbuild": "cd frontend && npm install && npm run build"
-  },
-  "dependencies": {
-    "aws-sdk": "^2.1691.0"
   }
 }
