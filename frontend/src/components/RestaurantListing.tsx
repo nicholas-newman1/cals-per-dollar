@@ -1,13 +1,14 @@
 import { Card, Typography, Box, ListItemButton } from "@mui/material";
 import React from "react";
 import { Link } from "react-router-dom";
+import { Restaurant } from "../pages/Restaurant/types";
 
 interface Props {
-  id: string;
-  name: string;
+  restaurant: Restaurant;
 }
 
-const RestaurantListing: React.FC<Props> = ({ id, name }) => {
+const RestaurantListing: React.FC<Props> = ({ restaurant }) => {
+  const { id, name, imageUrl } = restaurant;
   return (
     <Link to={`/browse/restaurant/${id}`}>
       <ListItemButton disableGutters sx={{ padding: 0, borderRadius: "1rem" }}>
@@ -30,7 +31,7 @@ const RestaurantListing: React.FC<Props> = ({ id, name }) => {
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundImage: `url(/assets/restaurants/${id}.jpg)`,
+              backgroundImage: `url(${imageUrl})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
               transition: "transform 0.5s ease",

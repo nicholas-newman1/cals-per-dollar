@@ -17,11 +17,7 @@ const Browse = () => {
         <List sx={{ marginTop: "1rem" }}>
           {restaurants?.map((restaurant: any) => (
             <Box sx={{ marginBottom: "1rem" }} key={restaurant.id}>
-              <RestaurantListing
-                key={restaurant.id}
-                id={restaurant.id}
-                name={restaurant.name}
-              />
+              <RestaurantListing key={restaurant.id} restaurant={restaurant} />
             </Box>
           ))}
         </List>
