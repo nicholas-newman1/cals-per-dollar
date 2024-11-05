@@ -9,6 +9,7 @@ interface Props {
 
 const RestaurantListing: React.FC<Props> = ({ restaurant }) => {
   const { id, name, imageUrl } = restaurant;
+  console.log(imageUrl);
   return (
     <Link to={`/browse/restaurant/${id}`}>
       <ListItemButton disableGutters sx={{ padding: 0, borderRadius: "1rem" }}>
