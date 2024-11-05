@@ -1,3 +1,5 @@
+import toCamelCase from "./toCamelCase";
+
 export interface ApiResponse<T> {
   success: boolean;
   message: string;
@@ -16,10 +18,11 @@ export const createResponse = <T>(
   data: T | null = null,
   errors: ValidationError[] = []
 ): ApiResponse<T> => {
+  const camelCasedData = data ? toCamelCase(data) : data;
   return {
     success,
     message,
-    data,
+    data: camelCasedData,
     errors,
   };
 };
