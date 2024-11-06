@@ -1,30 +1,39 @@
-import knex from "knex";
+import { Options, Sequelize } from "sequelize";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const dbUrl = process.env.JAWSDB_URL;
 
-const db = knex({
-  client: "mysql2",
-  connection: dbUrl || {
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: parseInt(process.env.DB_PORT || "3306", 10),
-    decimalNumbers: true,
-  },
-  pool: { min: 2, max: 10 },
+const options: Options = {
+  host: dbUrl ? undefined : process.env.DB_HOST || "",
+  port: dbUrl ? undefined : parseInt(process.env.DB_PORT || "3306", 10),
+  dialect: "mysql",
+  dialectOptions: { decimalNumbers: true },
+  pool: { max: 10, min: 2, acquire: 30000, idle: 10000 },
+};
+
+const sequelize = dbUrl
+  ? new Sequelize(dbUrl, options)
+  : new Sequelize(
+      process.env.DB_NAME!,
+      process.env.DB_USER!,
+      process.env.DB_PASSWORD,
+      options
+    );
+
+sequelize.addHook("beforeFind", (options) => {
+  options.raw = true;
 });
 
-db.raw("SELECT 1")
+sequelize
+  .authenticate()
   .then(() => {
     console.log("Connected to the database");
   })
-  .catch((err) => {
+  .catch((err: Error) => {
     console.error("Error connecting to the database:", err);
     process.exit(1);
   });
 
-export default db;
+export default sequelize;

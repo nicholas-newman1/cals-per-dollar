@@ -1,7 +1,7 @@
 import { Schema } from "zod";
 import { Request, Response, NextFunction } from "express";
 
-export const validateRequest = (
+const validateRequest = (
   schema: Schema,
   source: "body" | "query" | "params" = "body"
 ) => {
@@ -21,3 +21,5 @@ export const validateRequest = (
     next();
   };
 };
+
+export default validateRequest;

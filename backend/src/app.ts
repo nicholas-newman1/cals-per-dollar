@@ -1,74 +1,18 @@
-import express, { Request, Response, NextFunction } from "express";
+import "./globalTypes";
+import express from "express";
 import path from "path";
 import cron from "node-cron";
-import menuItemsRoutes from "./routes/menuItemsRoutes";
-import restaurantsRoutes from "./routes/restaurantsRoutes";
-import { createResponse, ValidationError } from "./utils/responseUtil";
-import errorHandler from "./middlewares/errorHandler";
-import scrapeMcDonaldsMenu from "./services/scrapeMcDonaldsMenu";
-import scrapeWendysMenu from "./services/scrapeWendysMenu";
-import scrapeBurgerKingMenu from "./services/scrapeBurgerKingMenu";
-import RestaurantEnum from "./types/restaurantEnum";
-import scrapeTacoBellMenu from "./services/scrapeTacoBellMenu";
-import "./globalTypes";
 import databaseBackup from "./scripts/databaseBackup";
+import menuItemsController from "./controllers/menuItemsController";
+import restaurantsController from "./controllers/restaurantsController";
+import { errorHandler, resRespond } from "./middlewares";
 
 const app = express();
 
-app.use((_req: Request, res: Response, next: NextFunction) => {
-  res.respond = function <T>(
-    success: boolean,
-    message: string,
-    data: T | null = null,
-    errors: ValidationError[] = []
-  ) {
-    this.json(createResponse(success, message, data, errors));
-  };
-  next();
-});
-
+app.use(resRespond);
 app.use(express.json());
-
-app.use("/api/menu-items", menuItemsRoutes);
-app.use("/api/restaurants", restaurantsRoutes);
-app.use("/scrape", (req, res) => {
-  const apiKey = req.headers["authorization"];
-  const validApiKey = process.env.ADMIN_API_KEY;
-  if (apiKey === `Bearer ${validApiKey}`) {
-    const ids = req.body.restaurantIds;
-    ids?.includes(RestaurantEnum.MCDONALDS) && scrapeMcDonaldsMenu();
-    ids?.includes(RestaurantEnum.WENDYS) && scrapeWendysMenu();
-    ids?.includes(RestaurantEnum.BURGER_KING) && scrapeBurgerKingMenu();
-    ids?.includes(RestaurantEnum.TACO_BELL) && scrapeTacoBellMenu();
-    res.respond(true, "Scraping initiated");
-  } else {
-    res.respond(false, "Unauthorized", null, [
-      {
-        field: "apiKey",
-        message: "Invalid API key",
-      },
-    ]);
-  }
-});
-
-app.use("/api/backup", async (_, res) => {
-  const apiKey = res.req?.headers["authorization"];
-  const validApiKey = process.env.ADMIN_API_KEY;
-  if (apiKey === `Bearer ${validApiKey}`) {
-    try {
-      await databaseBackup();
-      res.respond(true, "Database backup initiated");
-    } catch (error) {
-      res.respond(false, "Database backup failed", null, [
-        { field: "database", message: "Backup failed" },
-      ]);
-    }
-  } else {
-    res.respond(false, "Unauthorized", null, [
-      { field: "apiKey", message: "Invalid API key" },
-    ]);
-  }
-});
+app.use("/api/menu-items", menuItemsController);
+app.use("/api/restaurants", restaurantsController);
 cron.schedule("0 0 * * *", () => databaseBackup());
 
 // Serve the static files from the React app

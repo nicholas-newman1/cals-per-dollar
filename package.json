@@ -1,7 +1,7 @@
 {
   "name": "root-redirect",
   "scripts": {
-    "start": "cd backend && npm install && npx knex migrate:latest && npm run build && cd dist && node server.js",
+    "start": "cd backend && npm install && npx sequelize-cli db:migrate && npm run build && cd dist && node server.js",
     "heroku-postbuild": "cd frontend && npm install && npm run build"
   }
 }

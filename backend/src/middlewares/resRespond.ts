@@ -1,4 +1,4 @@
-import toCamelCase from "./toCamelCase";
+import { NextFunction, Request, Response } from "express";
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -18,11 +18,24 @@ export const createResponse = <T>(
   data: T | null = null,
   errors: ValidationError[] = []
 ): ApiResponse<T> => {
-  const camelCasedData = data ? toCamelCase(data) : data;
   return {
     success,
     message,
-    data: camelCasedData,
+    data,
     errors,
   };
 };
+
+const resRespond = (_req: Request, res: Response, next: NextFunction) => {
+  res.respond = function <T>(
+    success: boolean,
+    message: string,
+    data: T | null = null,
+    errors: ValidationError[] = []
+  ) {
+    this.json(createResponse(success, message, data, errors));
+  };
+  next();
+};
+
+export default resRespond;
