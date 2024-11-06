@@ -73,7 +73,7 @@ const RestaurantPage = () => {
         spacing={2}
         alignItems="center"
         justifyContent="center"
-        sx={{ backgroundImage: `url(/assets/restaurants/${id}.jpg)` }}
+        sx={{ backgroundImage: `url(${restaurant?.imageUrl})` }}
       >
         <IconButton
           sx={{
