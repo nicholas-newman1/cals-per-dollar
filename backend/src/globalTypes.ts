@@ -1,5 +1,5 @@
 import "express";
-import { ValidationError } from "./utils/responseUtil";
+import { ValidationError } from "./middlewares/resRespond";
 
 declare module "express" {
   interface Request {
