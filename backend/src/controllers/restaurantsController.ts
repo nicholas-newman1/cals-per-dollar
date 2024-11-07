@@ -2,6 +2,7 @@ import { Request, Response, Router } from "express";
 import getByIdSchema, { GetByIdSchema } from "../schemas/common/getByIdSchema";
 import { Restaurant } from "../models";
 import { asyncHandler, validateRequest } from "../middlewares";
+import { Op } from "sequelize";
 
 const restaurantsController = Router();
 
@@ -36,6 +37,31 @@ restaurantsController.get(
   asyncHandler(async (_: Request, res: Response) => {
     try {
       const restaurants = await Restaurant.findAll();
+
+      res.respond(true, "Restaurants retrieved successfully", restaurants);
+    } catch (error) {
+      console.error(error);
+
+      res.respond(false, "Unable to fetch restaurants", null, [
+        { field: "general", message: "Internal server error" },
+      ]);
+    }
+  })
+);
+
+restaurantsController.get(
+  "/v1/search",
+  asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const { query } = req.query;
+
+      const whereClause = {
+        ...(query && { name: { [Op.like]: `%${query}%` } }),
+      };
+
+      const restaurants = await Restaurant.findAll({
+        where: whereClause,
+      });
 
       res.respond(true, "Restaurants retrieved successfully", restaurants);
     } catch (error) {

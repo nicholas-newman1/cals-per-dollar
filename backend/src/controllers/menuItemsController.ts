@@ -7,7 +7,7 @@ import { asyncHandler, validateRequest } from "../middlewares";
 const menuItemsController = express.Router();
 
 const searchMenuItemsSchema = z.object({
-  query: z.string(),
+  query: z.string().optional(),
   restaurant: z.string().optional(),
 });
 
@@ -22,13 +22,14 @@ menuItemsController.get(
       try {
         const { query, restaurant } = req.query;
 
+        const whereClause = {
+          ...(query && { name: { [Op.like]: `%${query}%` } }),
+          ...(restaurant && { restaurantId: restaurant }),
+        };
+
         const menuItems = await MenuItem.findAll({
-          where: {
-            restaurantId: restaurant,
-            name: {
-              [Op.like]: `%${query}%`,
-            },
-          },
+          where: whereClause,
+          order: [[Sequelize.literal("calories / price"), "DESC"]],
         });
 
         if (!menuItems.length) {
