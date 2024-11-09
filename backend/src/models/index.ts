@@ -4,6 +4,7 @@ import { UserRole } from "./UserRole";
 import { Restaurant } from "./Restaurant";
 import { Category } from "./Category";
 import { MenuItem } from "./MenuItem";
+import { Tag } from "./Tag";
 
 Restaurant.hasMany(Category, { foreignKey: "restaurantId", as: "categories" });
 Category.belongsTo(Restaurant, {
@@ -32,4 +33,28 @@ Role.belongsToMany(User, {
   as: "users",
 });
 
-export { User, Role, UserRole, Restaurant, Category, MenuItem };
+MenuItem.belongsToMany(Tag, {
+  through: "menu_item_tags",
+  foreignKey: "menu_item_id",
+  otherKey: "tag_id",
+});
+
+Tag.belongsToMany(MenuItem, {
+  through: "menu_item_tags",
+  foreignKey: "tag_id",
+  otherKey: "menu_item_id",
+});
+
+Restaurant.belongsToMany(Tag, {
+  through: "restaurant_tags",
+  foreignKey: "restaurant_id",
+  otherKey: "tag_id",
+});
+
+Tag.belongsToMany(Restaurant, {
+  through: "restaurant_tags",
+  foreignKey: "tag_id",
+  otherKey: "restaurant_id",
+});
+
+export { User, Role, UserRole, Restaurant, Category, MenuItem, Tag };
