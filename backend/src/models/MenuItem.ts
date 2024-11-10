@@ -8,13 +8,19 @@ interface MenuItemAttributes {
   name: string;
   price: number;
   calories: number;
+  fat: number;
+  carbs: number;
+  protein: number;
   createdAt: Date;
   updatedAt: Date;
   imageUrl?: string;
 }
 
 interface MenuItemCreationAttributes
-  extends Optional<MenuItemAttributes, "id" | "createdAt" | "updatedAt"> {}
+  extends Optional<
+    MenuItemAttributes,
+    "id" | "createdAt" | "updatedAt" | "fat" | "carbs" | "protein"
+  > {}
 
 class MenuItem
   extends Model<MenuItemAttributes, MenuItemCreationAttributes>
@@ -26,6 +32,9 @@ class MenuItem
   public name!: string;
   public price!: number;
   public calories!: number;
+  public fat!: number;
+  public carbs!: number;
+  public protein!: number;
   public createdAt!: Date;
   public updatedAt!: Date;
   public imageUrl?: string;
@@ -67,6 +76,18 @@ MenuItem.init(
     calories: {
       type: DataTypes.INTEGER,
       allowNull: false,
+    },
+    fat: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    carbs: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    protein: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
     createdAt: {
       type: DataTypes.DATE,

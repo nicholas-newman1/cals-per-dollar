@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { Category, MenuItem } from "../models";
+import { Category, MenuItem, Restaurant } from "../models";
 import { Op, Sequelize } from "sequelize";
 import { z } from "zod";
 import { asyncHandler, validateRequest } from "../middlewares";
@@ -29,6 +29,12 @@ menuItemsController.get(
 
         const menuItems = await MenuItem.findAll({
           where: whereClause,
+          include: [
+            {
+              model: Restaurant,
+              as: "restaurant",
+            },
+          ],
           order: [[Sequelize.literal("calories / price"), "DESC"]],
         });
 
