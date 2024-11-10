@@ -1,16 +1,16 @@
 import express, { Request, Response } from "express";
 import { Category, MenuItem, Restaurant } from "../models";
-import { Op, Sequelize } from "sequelize";
+import { Sequelize } from "sequelize";
 import { z } from "zod";
 import { asyncHandler, validateRequest } from "../middlewares";
+import baseSearchSchema from "../schemas/common/baseSearchSchema";
+import createFindOptions from "../utils/createFindOptions";
+import createPagination from "../utils/createPagination";
 
 const menuItemsController = express.Router();
 
-const searchMenuItemsSchema = z.object({
-  query: z.string().optional(),
+const searchMenuItemsSchema = baseSearchSchema.extend({
   restaurant: z.string().optional(),
-  page: z.string().optional(),
-  itemsPerPage: z.string().optional(),
 });
 
 menuItemsController.get(
@@ -23,44 +23,20 @@ menuItemsController.get(
     ) => {
       try {
         const { query, restaurant, page, itemsPerPage } = req.query;
+        const { findOptions, pageNum, itemsPerPageNum } = createFindOptions(
+          query,
+          page,
+          itemsPerPage,
+          restaurant ? { restaurantId: restaurant } : {}
+        );
 
-        const pageNum = page ? parseInt(page as string, 10) : undefined;
-        const itemsPerPageNum = itemsPerPage
-          ? parseInt(itemsPerPage as string, 10)
-          : undefined;
-
-        if (
-          (pageNum && isNaN(pageNum)) ||
-          (itemsPerPageNum && isNaN(itemsPerPageNum))
-        ) {
-          return res.respond(false, "Invalid pagination parameters", null, [
-            {
-              field: "pagination",
-              message: "Page and itemsPerPage must be valid numbers",
-            },
-          ]);
-        }
-
-        const whereClause = {
-          ...(query && { name: { [Op.like]: `%${query}%` } }),
-          ...(restaurant && { restaurantId: restaurant }),
-        };
-
-        const findOptions: any = {
-          where: whereClause,
-          include: [
-            {
-              model: Restaurant,
-              as: "restaurant",
-            },
-          ],
-          order: [[Sequelize.literal("calories / price"), "DESC"]],
-        };
-
-        if (pageNum && itemsPerPageNum) {
-          findOptions.offset = (pageNum - 1) * itemsPerPageNum;
-          findOptions.limit = itemsPerPageNum;
-        }
+        findOptions.include = [
+          {
+            model: Restaurant,
+            as: "restaurant",
+          },
+        ];
+        findOptions.order = [[Sequelize.literal("calories / price"), "DESC"]];
 
         const { count, rows: menuItems } = await MenuItem.findAndCountAll(
           findOptions
@@ -74,24 +50,14 @@ menuItemsController.get(
           );
         }
 
-        const totalPages = itemsPerPageNum
-          ? Math.ceil(count / itemsPerPageNum)
-          : 1;
+        const pagination = createPagination(count, pageNum, itemsPerPageNum);
 
         res.respond(true, "Menu items retrieved successfully", {
           hits: menuItems,
-          pagination: itemsPerPageNum
-            ? {
-                currentPage: pageNum,
-                totalPages,
-                totalItems: count,
-                itemsPerPage: itemsPerPageNum,
-              }
-            : undefined,
+          pagination,
         });
       } catch (error) {
         console.error(error);
-
         res.respond(false, "Unable to fetch menu items", null, [
           { field: "general", message: "Internal server error" },
         ]);

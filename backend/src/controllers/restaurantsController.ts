@@ -2,7 +2,10 @@ import { Request, Response, Router } from "express";
 import getByIdSchema, { GetByIdSchema } from "../schemas/common/getByIdSchema";
 import { Restaurant } from "../models";
 import { asyncHandler, validateRequest } from "../middlewares";
-import { Op } from "sequelize";
+import { z } from "zod";
+import baseSearchSchema from "../schemas/common/baseSearchSchema";
+import createFindOptions from "../utils/createFindOptions";
+import createPagination from "../utils/createPagination";
 
 const restaurantsController = Router();
 
@@ -49,76 +52,49 @@ restaurantsController.get(
   })
 );
 
+const searchRestaurantsSchema = baseSearchSchema;
+
 restaurantsController.get(
   "/v1/search",
-  asyncHandler(async (req: Request, res: Response) => {
-    try {
-      const { query, page, itemsPerPage } = req.query;
+  validateRequest(searchRestaurantsSchema, "query"),
+  asyncHandler(
+    async (
+      req: Request<any, any, any, z.infer<typeof searchRestaurantsSchema>>,
+      res: Response
+    ) => {
+      try {
+        const { query, page, itemsPerPage } = req.query;
+        const { findOptions, pageNum, itemsPerPageNum } = createFindOptions(
+          query,
+          page,
+          itemsPerPage
+        );
 
-      const pageNum = page ? parseInt(page as string, 10) : undefined;
-      const itemsPerPageNum = itemsPerPage
-        ? parseInt(itemsPerPage as string, 10)
-        : undefined;
+        const { count, rows: restaurants } = await Restaurant.findAndCountAll(
+          findOptions
+        );
 
-      if (
-        (pageNum && isNaN(pageNum)) ||
-        (itemsPerPageNum && isNaN(itemsPerPageNum))
-      ) {
-        return res.respond(false, "Invalid pagination parameters", null, [
-          {
-            field: "pagination",
-            message: "Page and itemsPerPage must be valid numbers",
-          },
+        if (!restaurants.length) {
+          return res.respond(
+            true,
+            "No restaurants found for the given query",
+            []
+          );
+        }
+
+        const pagination = createPagination(count, pageNum, itemsPerPageNum);
+
+        res.respond(true, "Restaurants retrieved successfully", {
+          hits: restaurants,
+          pagination,
+        });
+      } catch (error) {
+        console.error(error);
+        res.respond(false, "Unable to fetch restaurants", null, [
+          { field: "general", message: "Internal server error" },
         ]);
       }
-
-      const whereClause = {
-        ...(query && { name: { [Op.like]: `%${query}%` } }),
-      };
-
-      const findOptions: any = {
-        where: whereClause,
-      };
-
-      if (pageNum && itemsPerPageNum) {
-        findOptions.offset = (pageNum - 1) * itemsPerPageNum;
-        findOptions.limit = itemsPerPageNum;
-      }
-
-      const { count, rows: restaurants } = await Restaurant.findAndCountAll(
-        findOptions
-      );
-
-      if (!restaurants.length) {
-        return res.respond(
-          true,
-          "No restaurants found for the given query",
-          []
-        );
-      }
-
-      const totalPages = itemsPerPageNum
-        ? Math.ceil(count / itemsPerPageNum)
-        : 1;
-
-      res.respond(true, "Restaurants retrieved successfully", {
-        hits: restaurants,
-        pagination: itemsPerPageNum
-          ? {
-              currentPage: pageNum,
-              totalPages,
-              totalItems: count,
-              itemsPerPage: itemsPerPageNum,
-            }
-          : undefined,
-      });
-    } catch (error) {
-      console.error(error);
-
-      res.respond(false, "Unable to fetch restaurants", null, [
-        { field: "general", message: "Internal server error" },
-      ]);
     }
-  })
+  )
 );
 export default restaurantsController;
