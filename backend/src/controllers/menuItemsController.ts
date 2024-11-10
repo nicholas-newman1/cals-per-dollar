@@ -9,6 +9,8 @@ const menuItemsController = express.Router();
 const searchMenuItemsSchema = z.object({
   query: z.string().optional(),
   restaurant: z.string().optional(),
+  page: z.string().optional(),
+  itemsPerPage: z.string().optional(),
 });
 
 menuItemsController.get(
@@ -20,14 +22,31 @@ menuItemsController.get(
       res: Response
     ) => {
       try {
-        const { query, restaurant } = req.query;
+        const { query, restaurant, page, itemsPerPage } = req.query;
+
+        const pageNum = page ? parseInt(page as string, 10) : undefined;
+        const itemsPerPageNum = itemsPerPage
+          ? parseInt(itemsPerPage as string, 10)
+          : undefined;
+
+        if (
+          (pageNum && isNaN(pageNum)) ||
+          (itemsPerPageNum && isNaN(itemsPerPageNum))
+        ) {
+          return res.respond(false, "Invalid pagination parameters", null, [
+            {
+              field: "pagination",
+              message: "Page and itemsPerPage must be valid numbers",
+            },
+          ]);
+        }
 
         const whereClause = {
           ...(query && { name: { [Op.like]: `%${query}%` } }),
           ...(restaurant && { restaurantId: restaurant }),
         };
 
-        const menuItems = await MenuItem.findAll({
+        const findOptions: any = {
           where: whereClause,
           include: [
             {
@@ -36,7 +55,16 @@ menuItemsController.get(
             },
           ],
           order: [[Sequelize.literal("calories / price"), "DESC"]],
-        });
+        };
+
+        if (pageNum && itemsPerPageNum) {
+          findOptions.offset = (pageNum - 1) * itemsPerPageNum;
+          findOptions.limit = itemsPerPageNum;
+        }
+
+        const { count, rows: menuItems } = await MenuItem.findAndCountAll(
+          findOptions
+        );
 
         if (!menuItems.length) {
           return res.respond(
@@ -46,7 +74,21 @@ menuItemsController.get(
           );
         }
 
-        res.respond(true, "Menu items retrieved successfully", menuItems);
+        const totalPages = itemsPerPageNum
+          ? Math.ceil(count / itemsPerPageNum)
+          : 1;
+
+        res.respond(true, "Menu items retrieved successfully", {
+          hits: menuItems,
+          pagination: itemsPerPageNum
+            ? {
+                currentPage: pageNum,
+                totalPages,
+                totalItems: count,
+                itemsPerPage: itemsPerPageNum,
+              }
+            : undefined,
+        });
       } catch (error) {
         console.error(error);
 

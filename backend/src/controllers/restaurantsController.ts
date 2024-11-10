@@ -53,17 +53,65 @@ restaurantsController.get(
   "/v1/search",
   asyncHandler(async (req: Request, res: Response) => {
     try {
-      const { query } = req.query;
+      const { query, page, itemsPerPage } = req.query;
+
+      const pageNum = page ? parseInt(page as string, 10) : undefined;
+      const itemsPerPageNum = itemsPerPage
+        ? parseInt(itemsPerPage as string, 10)
+        : undefined;
+
+      if (
+        (pageNum && isNaN(pageNum)) ||
+        (itemsPerPageNum && isNaN(itemsPerPageNum))
+      ) {
+        return res.respond(false, "Invalid pagination parameters", null, [
+          {
+            field: "pagination",
+            message: "Page and itemsPerPage must be valid numbers",
+          },
+        ]);
+      }
 
       const whereClause = {
         ...(query && { name: { [Op.like]: `%${query}%` } }),
       };
 
-      const restaurants = await Restaurant.findAll({
+      const findOptions: any = {
         where: whereClause,
-      });
+      };
 
-      res.respond(true, "Restaurants retrieved successfully", restaurants);
+      if (pageNum && itemsPerPageNum) {
+        findOptions.offset = (pageNum - 1) * itemsPerPageNum;
+        findOptions.limit = itemsPerPageNum;
+      }
+
+      const { count, rows: restaurants } = await Restaurant.findAndCountAll(
+        findOptions
+      );
+
+      if (!restaurants.length) {
+        return res.respond(
+          true,
+          "No restaurants found for the given query",
+          []
+        );
+      }
+
+      const totalPages = itemsPerPageNum
+        ? Math.ceil(count / itemsPerPageNum)
+        : 1;
+
+      res.respond(true, "Restaurants retrieved successfully", {
+        hits: restaurants,
+        pagination: itemsPerPageNum
+          ? {
+              currentPage: pageNum,
+              totalPages,
+              totalItems: count,
+              itemsPerPage: itemsPerPageNum,
+            }
+          : undefined,
+      });
     } catch (error) {
       console.error(error);
 
@@ -73,5 +121,4 @@ restaurantsController.get(
     }
   })
 );
-
 export default restaurantsController;
