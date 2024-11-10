@@ -48,11 +48,11 @@ const Search: React.FC<Props> = ({
 
       setLoading(true);
       try {
-        const data = await makeRequest<any[]>({
+        const data = await makeRequest<any>({
           endpoint,
           params: { query, ...params },
         });
-        setResults(data);
+        setResults(data.hits);
       } catch (error) {
         setResults([]);
       } finally {
