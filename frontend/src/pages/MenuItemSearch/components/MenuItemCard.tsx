@@ -107,7 +107,7 @@ const MenuItemCard: React.FC<MenuItemSearchResult> = ({
           />
           <Box sx={{ textAlign: "center", flex: 1 }}>
             <Typography variant="h6" fontWeight="bold">
-              ${price}
+              ${price.toFixed(2)}
             </Typography>
             <Typography variant="caption">Price</Typography>
           </Box>
