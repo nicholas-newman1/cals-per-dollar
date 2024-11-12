@@ -25,7 +25,7 @@ const useInfiniteScroll = ({
         }
       },
       {
-        root: null, // Default to the viewport
+        root: null,
         rootMargin,
         threshold,
       }

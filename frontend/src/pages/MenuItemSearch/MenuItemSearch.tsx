@@ -1,17 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 import { Box, CircularProgress, Grid, Typography } from "@mui/material";
 import useSearch from "../../hooks/useSearch";
-import useInfiniteScroll from "../../hooks/useInfiniteScroll"; // Import the new hook
+import useInfiniteScroll from "../../hooks/useInfiniteScroll";
 import { MenuItemSearchResult } from "./types";
 import MenuItemCard from "./components/MenuItemCard";
 import CustomSearchInput from "../../components/CustomSearchInput";
 
 const MenuItemSearch = () => {
-  const [query, setQuery] = useState<string>("");
-
-  const { initialLoading, hits, loading, loadMore } =
+  const { initialLoading, hits, loading, loadMore, query, setQuery } =
     useSearch<MenuItemSearchResult>("/menu-items/v1/search", {
-      query,
       enablePagination: true,
     });
 

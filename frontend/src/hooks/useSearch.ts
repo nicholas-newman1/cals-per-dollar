@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import makeRequest, {
   ApiException,
   ValidationErrorException,
@@ -21,6 +22,10 @@ interface UseSearchResult<T> {
   loadMore: () => void;
   hasMore: boolean;
   refetch: () => void;
+  query: string;
+  setQuery: (query: string) => void;
+  setSort: (sort: string) => void;
+  setFilters: (filters: Record<string, any>) => void;
 }
 
 function useDebounce(value: any, delay: number) {
@@ -48,16 +53,54 @@ function useSearch<T>(
     itemsPerPage = 20,
     enablePagination = false,
   } = options;
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Memoize initial values based on URL parameters
+  const { initialQuery, initialSort, initialFilters, initialPage } =
+    useMemo(() => {
+      const urlParams = new URLSearchParams(location.search);
+      const initialQuery = urlParams.get("query") || options.query || "";
+      const initialSort = urlParams.get("sort") || options.sort || "";
+      const initialPage = parseInt(urlParams.get("page") || "1", 10);
+
+      const initialFilters: Record<string, any> = { ...options.filters };
+      urlParams.forEach((value, key) => {
+        if (!["query", "sort", "page"].includes(key)) {
+          initialFilters[key] = value;
+        }
+      });
+
+      return { initialQuery, initialSort, initialFilters, initialPage };
+    }, [location.search, options.query, options.sort, options.filters]);
+
+  // Set up state for query, sort, filters, and page with URL-based defaults
+  const [query, setQuery] = useState<string>(initialQuery);
+  const [sort, setSort] = useState<string>(initialSort);
+  const [filters, setFilters] = useState<Record<string, any>>(initialFilters);
+  const [page, setPage] = useState<number>(initialPage);
+
   const [hits, setHits] = useState<T[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [initialLoading, setInitialLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(true);
 
-  const debouncedQuery = useDebounce(options.query, debounce);
-  const debouncedFilters = useDebounce(options.filters, debounce);
-  const debouncedSort = useDebounce(options.sort, debounce);
+  const debouncedQuery = useDebounce(query, debounce);
+  const debouncedFilters = useDebounce(filters, debounce);
+  const debouncedSort = useDebounce(sort, debounce);
+
+  const updateURL = useCallback(() => {
+    const params = new URLSearchParams();
+    if (debouncedQuery) params.set("query", debouncedQuery);
+    if (debouncedSort) params.set("sort", debouncedSort);
+    if (page > 1) params.set("page", page.toString());
+    Object.entries(debouncedFilters || {}).forEach(([key, value]: any) => {
+      params.set(key, value);
+    });
+    const newURL = `${window.location.pathname}?${params.toString()}`;
+    navigate(newURL, { replace: true });
+  }, [debouncedQuery, debouncedSort, debouncedFilters, page, navigate]);
 
   const fetchData = useCallback(
     async (reset = false) => {
@@ -71,7 +114,7 @@ function useSearch<T>(
           ...(debouncedQuery ? { query: debouncedQuery } : {}),
           ...(debouncedFilters ? debouncedFilters : {}),
           ...(debouncedSort ? { sort: debouncedSort } : {}),
-          ...(enablePagination ? { page, itemsPerPage } : {}), // Apply pagination only if enabled
+          ...(enablePagination ? { page, itemsPerPage } : {}),
         };
 
         const data = await makeRequest<{
@@ -112,6 +155,7 @@ function useSearch<T>(
       } finally {
         setLoading(false);
         setInitialLoading(false);
+        updateURL(); // Update URL after data is fetched
       }
     },
     [
@@ -122,6 +166,7 @@ function useSearch<T>(
       itemsPerPage,
       loading,
       enablePagination,
+      updateURL,
     ]
   );
 
@@ -150,6 +195,10 @@ function useSearch<T>(
     loadMore,
     hasMore,
     refetch: () => fetchData(true),
+    query,
+    setQuery,
+    setSort,
+    setFilters,
   };
 }
 
