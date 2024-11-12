@@ -49,12 +49,10 @@ Restaurant.init(
     createdAt: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
-      field: "created_at",
     },
     updatedAt: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
-      field: "updated_at",
     },
     imageUrl: {
       type: DataTypes.STRING(255),

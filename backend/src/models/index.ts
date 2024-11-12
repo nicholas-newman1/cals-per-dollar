@@ -34,27 +34,31 @@ Role.belongsToMany(User, {
 });
 
 MenuItem.belongsToMany(Tag, {
-  through: "menu_item_tags",
+  through: "cpd_menu_item_tags",
   foreignKey: "menu_item_id",
   otherKey: "tag_id",
+  as: "tags",
 });
 
 Tag.belongsToMany(MenuItem, {
-  through: "menu_item_tags",
+  through: "cpd_menu_item_tags",
   foreignKey: "tag_id",
   otherKey: "menu_item_id",
+  as: "menuItems",
 });
 
 Restaurant.belongsToMany(Tag, {
-  through: "restaurant_tags",
+  through: "cpd_restaurant_tags",
   foreignKey: "restaurant_id",
   otherKey: "tag_id",
+  as: "tags",
 });
 
 Tag.belongsToMany(Restaurant, {
-  through: "restaurant_tags",
+  through: "cpd_restaurant_tags",
   foreignKey: "tag_id",
   otherKey: "restaurant_id",
+  as: "restaurants",
 });
 
 export { User, Role, UserRole, Restaurant, Category, MenuItem, Tag };

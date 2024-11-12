@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "../config/db";
+import { Tag } from "./Tag"; // Ensure Tag is imported
 
 interface MenuItemAttributes {
   id: number;
@@ -14,6 +15,7 @@ interface MenuItemAttributes {
   createdAt: Date;
   updatedAt: Date;
   imageUrl?: string;
+  tags?: Tag[]; // Add the tags association here
 }
 
 interface MenuItemCreationAttributes
@@ -38,6 +40,14 @@ class MenuItem
   public createdAt!: Date;
   public updatedAt!: Date;
   public imageUrl?: string;
+
+  // Association methods for Tags
+  public setTags!: (tags: Tag[]) => Promise<void>;
+  public getTags!: () => Promise<Tag[]>;
+  public addTag!: (tag: Tag) => Promise<void>;
+  public addTags!: (tags: Tag[]) => Promise<void>;
+  public removeTag!: (tag: Tag) => Promise<void>;
+  public removeTags!: (tags: Tag[]) => Promise<void>;
 }
 
 MenuItem.init(
@@ -92,12 +102,10 @@ MenuItem.init(
     createdAt: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
-      field: "created_at",
     },
     updatedAt: {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
-      field: "updated_at",
     },
     imageUrl: {
       type: DataTypes.STRING(255),
