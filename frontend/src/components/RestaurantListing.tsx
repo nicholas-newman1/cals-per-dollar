@@ -10,7 +10,7 @@ interface Props {
 const RestaurantListing: React.FC<Props> = ({ restaurant }) => {
   const { id, name, imageUrl } = restaurant;
   return (
-    <Link to={`/browse/restaurant/${id}`}>
+    <Link to={`/restaurants/${id}`}>
       <ListItemButton disableGutters sx={{ padding: 0, borderRadius: "1rem" }}>
         <Card
           sx={{

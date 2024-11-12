@@ -4,7 +4,7 @@ import Loader from "../../components/Loader";
 import { useRequest } from "../../hooks/useRequest";
 import { Restaurant } from "../Restaurant/types";
 
-const Browse = () => {
+const RestaurantSearch = () => {
   const { data: restaurants, loading } = useRequest<Restaurant[]>(
     "/restaurants/v1/get-all"
   );
@@ -26,4 +26,4 @@ const Browse = () => {
   );
 };
 
-export default Browse;
+export default RestaurantSearch;

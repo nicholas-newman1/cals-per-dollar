@@ -1,7 +1,11 @@
 export interface Restaurant {
   id: string;
   name: string;
-  imageUrl: string;
+  location?: string;
+  website?: string;
+  createdAt: string;
+  updatedAt: string;
+  imageUrl?: string;
 }
 
 export interface MenuItem {

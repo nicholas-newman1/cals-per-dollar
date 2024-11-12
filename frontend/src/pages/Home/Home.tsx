@@ -89,7 +89,7 @@ const About: React.FC = () => {
             <Grid item>
               <Button
                 component={Link}
-                to="/browse"
+                to="/food"
                 color="primary"
                 variant="contained"
               >
@@ -244,7 +244,7 @@ const About: React.FC = () => {
             <Grid item>
               <Button
                 component={Link}
-                to="/browse"
+                to="/food"
                 color="primary"
                 variant="contained"
                 sx={{ margin: "2rem auto" }}

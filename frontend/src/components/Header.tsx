@@ -2,7 +2,7 @@ import { AppBar, Grid, styled, Typography } from "@mui/material";
 import { Link, useLocation } from "react-router-dom";
 import theme from "../theme";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { HomeOutlined, Search } from "@mui/icons-material";
+import { Fastfood, HomeOutlined, Restaurant } from "@mui/icons-material";
 
 const TopAppBar = styled(AppBar)({
   backgroundColor: theme.palette.background.default,
@@ -32,9 +32,14 @@ const navItems = [
     Icon: HomeOutlined,
   },
   {
-    to: "/browse",
-    label: "Browse",
-    Icon: Search,
+    to: "/restaurants",
+    label: "Restaurants",
+    Icon: Restaurant,
+  },
+  {
+    to: "/food",
+    label: "Food",
+    Icon: Fastfood,
   },
 ];
 
