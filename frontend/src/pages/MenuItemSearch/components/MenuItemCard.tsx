@@ -51,7 +51,7 @@ const MenuItemCard: React.FC<MenuItemSearchResult> = ({
             component="img"
             image={imageUrl}
             alt={name}
-            sx={{ height: "100%", width: "100%", objectFit: "cover" }}
+            sx={{ height: "100%", width: "100%", objectFit: "contain" }}
           />
         ) : (
           <FastfoodIcon
