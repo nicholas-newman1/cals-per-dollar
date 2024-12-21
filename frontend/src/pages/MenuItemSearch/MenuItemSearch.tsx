@@ -35,7 +35,7 @@ const MenuItemSearch = () => {
         <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
           <CircularProgress size={50} />
         </Box>
-      ) : hits.length === 0 ? (
+      ) : hits?.length === 0 ? (
         <Typography
           variant="h6"
           align="center"
@@ -46,7 +46,7 @@ const MenuItemSearch = () => {
         </Typography>
       ) : (
         <Grid container spacing={4}>
-          {hits.map((item, index) => (
+          {hits?.map((item, index) => (
             <Grid
               item
               xs={12}

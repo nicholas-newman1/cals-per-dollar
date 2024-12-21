@@ -130,11 +130,11 @@ function useSearch<T>(
           method: "GET",
           params,
         });
-
+        const hits = data.hits || [];
         if (reset) {
-          setHits(data.hits);
+          setHits(hits);
         } else {
-          setHits((prevHits) => [...prevHits, ...data.hits]);
+          setHits((prevHits = []) => [...prevHits, ...hits]);
         }
 
         if (enablePagination) {
