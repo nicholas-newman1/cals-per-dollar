@@ -1,11 +1,13 @@
 import express, { Request, Response } from "express";
-import { Category, MenuItem, Restaurant } from "../models";
+import { Category, MenuItem, Restaurant, Tag } from "../models";
 import { Sequelize } from "sequelize";
 import { z } from "zod";
 import { asyncHandler, validateRequest } from "../middlewares";
 import baseSearchSchema from "../schemas/common/baseSearchSchema";
 import createFindOptions from "../utils/createFindOptions";
 import createPagination from "../utils/createPagination";
+import requireApiKey from "../middlewares/requireApiKey";
+import algoliaClient from "../services/algolia";
 
 const menuItemsController = express.Router();
 
@@ -121,6 +123,57 @@ menuItemsController.get(
       }
     }
   )
+);
+
+menuItemsController.post(
+  "/v1/algolia-reload",
+  requireApiKey,
+  asyncHandler(async (_: Request, res: Response) => {
+    try {
+      const menuItems = (await MenuItem.findAll({
+        raw: false,
+        include: [
+          {
+            model: Restaurant,
+            as: "restaurant",
+            attributes: ["name"],
+          },
+          {
+            model: Tag,
+            as: "tags",
+            attributes: ["name"],
+          },
+        ],
+      })) as (MenuItem & { restaurant?: any; tags?: any[] })[];
+
+      const objects = menuItems.map((item) => ({
+        objectID: item.id,
+        name: item.name,
+        restaurant: {
+          name: item.restaurant?.name,
+        },
+        calories: item.calories,
+        price: item.price,
+        tags: item.tags?.map((tag) => tag.name),
+        fat: item.fat,
+        carbs: item.carbs,
+        protein: item.protein,
+        imageUrl: item.imageUrl,
+      }));
+
+      await algoliaClient.saveObjects({
+        indexName: process.env.ALGOLIA_INDEX_PREFIX + "cpd_menu_items",
+        objects,
+      });
+
+      res.respond(true, "Menu items reloaded to Algolia successfully");
+    } catch (error) {
+      console.error(error);
+      res.respond(false, "Unable to reload menu items to Algolia", null, [
+        { field: "general", message: "Internal server error" },
+      ]);
+    }
+  })
 );
 
 export default menuItemsController;

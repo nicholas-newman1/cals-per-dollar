@@ -4,14 +4,12 @@ interface UseInfiniteScrollOptions {
   onIntersect: () => void;
   rootMargin?: string;
   threshold?: number;
-  isLoading: boolean;
 }
 
 const useInfiniteScroll = ({
   onIntersect,
   rootMargin = "100px",
   threshold = 1.0,
-  isLoading,
 }: UseInfiniteScrollOptions) => {
   const observerRef = useRef<HTMLDivElement | null>(null);
 
@@ -20,7 +18,7 @@ const useInfiniteScroll = ({
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !isLoading) {
+        if (entries[0].isIntersecting) {
           onIntersect();
         }
       },
@@ -37,7 +35,7 @@ const useInfiniteScroll = ({
     return () => {
       observer.unobserve(currentRef);
     };
-  }, [onIntersect, rootMargin, threshold, isLoading]);
+  }, [onIntersect, rootMargin, threshold]);
 
   return observerRef;
 };

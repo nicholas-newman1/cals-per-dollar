@@ -1,79 +1,94 @@
 import React from "react";
-import { Box, CircularProgress, Grid, Typography } from "@mui/material";
-import useSearch from "../../hooks/useSearch";
+import {
+  InstantSearch,
+  Configure,
+  useSearchBox,
+  useInfiniteHits,
+} from "react-instantsearch";
+import { liteClient as algoliasearch } from "algoliasearch/lite";
+import { Box, Grid, Typography } from "@mui/material";
 import useInfiniteScroll from "../../hooks/useInfiniteScroll";
-import { MenuItemSearchResult } from "./types";
 import MenuItemCard from "./components/MenuItemCard";
 import CustomSearchInput from "../../components/CustomSearchInput";
 
-const MenuItemSearch = () => {
-  const { initialLoading, hits, loading, loadMore, query, setQuery } =
-    useSearch<MenuItemSearchResult>("/menu-items/v1/search", {
-      enablePagination: true,
-    });
+const searchClient = algoliasearch(
+  process.env.REACT_APP_ALGOLIA_APP_ID!,
+  process.env.REACT_APP_ALGOLIA_SEARCH_KEY!
+);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
+function SearchBox() {
+  const { query, refine } = useSearchBox();
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    refine(event.target.value);
   };
 
+  return (
+    <CustomSearchInput
+      placeholder="Search food..."
+      value={query}
+      onChange={handleChange}
+    />
+  );
+}
+
+function CustomInfiniteHits() {
+  const { items, showMore, isLastPage } = useInfiniteHits();
+
   const loadMoreRef = useInfiniteScroll({
-    onIntersect: loadMore,
-    isLoading: loading,
+    onIntersect: () => !isLastPage && showMore(),
   });
 
-  return (
-    <Box sx={{ flexGrow: 1, m: 2 }}>
-      <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-        <CustomSearchInput
-          placeholder="Search food..."
-          value={query}
-          onChange={handleInputChange}
-        />
-      </Box>
+  if (items.length === 0) {
+    return (
+      <Typography
+        variant="h6"
+        align="center"
+        color="textSecondary"
+        sx={{ mt: 4 }}
+      >
+        No results found.
+      </Typography>
+    );
+  }
 
-      {initialLoading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-          <CircularProgress size={50} />
-        </Box>
-      ) : hits?.length === 0 ? (
-        <Typography
-          variant="h6"
-          align="center"
-          color="textSecondary"
-          sx={{ mt: 4 }}
+  return (
+    <Grid container spacing={4}>
+      {items.map((hit: any) => (
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={4}
+          lg={3}
+          xl={2}
+          key={hit.objectID}
+          sx={{ display: "flex" }}
         >
-          No results found for "{query}".
-        </Typography>
-      ) : (
-        <Grid container spacing={4}>
-          {hits?.map((item, index) => (
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              md={4}
-              lg={3}
-              xl={2}
-              key={index}
-              sx={{ display: "flex" }}
-            >
-              <MenuItemCard {...item} />
-            </Grid>
-          ))}
-          {loading && (
-            <Grid
-              item
-              xs={12}
-              sx={{ display: "flex", justifyContent: "center", mt: 2 }}
-            >
-              <CircularProgress size={50} />
-            </Grid>
-          )}
-          <div ref={loadMoreRef} style={{ height: 1 }} />
+          <MenuItemCard {...hit} />
         </Grid>
-      )}
-    </Box>
+      ))}
+
+      <div ref={loadMoreRef} style={{ height: 1 }} />
+    </Grid>
   );
-};
+}
+
+function MenuItemSearch() {
+  return (
+    <InstantSearch
+      searchClient={searchClient}
+      indexName={`${process.env.REACT_APP_ALGOLIA_INDEX_PREFIX}cpd_menu_items`}
+    >
+      <Box sx={{ flexGrow: 1, m: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+          <SearchBox />
+        </Box>
+        <CustomInfiniteHits />
+        <Configure hitsPerPage={12} />
+      </Box>
+    </InstantSearch>
+  );
+}
 
 export default MenuItemSearch;

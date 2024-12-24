@@ -23,7 +23,6 @@ const sequelize = dbUrl
     );
 
 sequelize.addHook("beforeFind", (options) => {
-  options.raw = true;
   options.nest = true;
 });
 
