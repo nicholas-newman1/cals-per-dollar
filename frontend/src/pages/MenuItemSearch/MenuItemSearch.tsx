@@ -10,6 +10,9 @@ import { Box, Grid, Typography } from "@mui/material";
 import useInfiniteScroll from "../../hooks/useInfiniteScroll";
 import MenuItemCard from "./components/MenuItemCard";
 import CustomSearchInput from "../../components/CustomSearchInput";
+import ActiveFilters from "../../components/ActiveFilters";
+import { filterButtons } from "./constants";
+import FilterButton from "../../components/FilterButton";
 
 const searchClient = algoliasearch(
   process.env.REACT_APP_ALGOLIA_APP_ID!,
@@ -53,7 +56,7 @@ function CustomInfiniteHits() {
   }
 
   return (
-    <Grid container spacing={4}>
+    <Grid container spacing={2}>
       {items.map((hit: any) => (
         <Grid
           item
@@ -74,21 +77,38 @@ function CustomInfiniteHits() {
   );
 }
 
-function MenuItemSearch() {
+function MenuItemSearchContent() {
   return (
-    <InstantSearch
-      searchClient={searchClient}
-      indexName={`${process.env.REACT_APP_ALGOLIA_INDEX_PREFIX}cpd_menu_items`}
-    >
+    <>
       <Box sx={{ flexGrow: 1, m: 2 }}>
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
           <SearchBox />
         </Box>
+
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
+          {filterButtons.map((button) => (
+            <FilterButton key={button.label} {...button} />
+          ))}
+        </Box>
+
+        <Box sx={{ mb: 2 }}>
+          <ActiveFilters />
+        </Box>
+
         <CustomInfiniteHits />
         <Configure hitsPerPage={12} />
       </Box>
-    </InstantSearch>
+    </>
   );
 }
+
+const MenuItemSearch = () => (
+  <InstantSearch
+    searchClient={searchClient}
+    indexName={`${process.env.REACT_APP_ALGOLIA_INDEX_PREFIX}cpd_menu_items`}
+  >
+    <MenuItemSearchContent />
+  </InstantSearch>
+);
 
 export default MenuItemSearch;

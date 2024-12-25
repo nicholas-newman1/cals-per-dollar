@@ -146,18 +146,79 @@ menuItemsController.post(
         ],
       })) as (MenuItem & { restaurant?: any; tags?: any[] })[];
 
+      const cuisineTags = [
+        "Italian",
+        "Mexican",
+        "Chinese",
+        "Japanese",
+        "Indian",
+        "Thai",
+        "Greek",
+        "Middle Eastern",
+        "American",
+        "French",
+        "Mediterranean",
+        "Korean",
+        "Vietnamese",
+      ];
+
+      const restaurantTypeTags = [
+        "Fast Food",
+        "Casual Dining",
+        "Fine Dining",
+        "Buffet",
+        "Food Truck",
+        "Café",
+        "Diner",
+        "Bakery",
+      ];
+
+      const mealTypeTags = [
+        "Breakfast",
+        "Lunch",
+        "Dinner",
+        "Desert",
+        "Limited-Time Offer",
+      ];
+
+      const foodTypeTags = [
+        "Seafood",
+        "Steak",
+        "Burger",
+        "Pizza",
+        "Pasta",
+        "Salad",
+        "Taco",
+        "Sushi",
+        "Ramen",
+        "BBQ",
+        "Sandwich",
+        "Fish",
+        "Chicken",
+        "Wrap",
+      ];
+
+      const filterTags = (tags: string[], itemTags?: Tag[]) =>
+        tags.filter((tag) => itemTags?.some((t) => t.name === tag));
+
       const objects = menuItems.map((item) => ({
         objectID: item.id,
         name: item.name,
-        restaurant: {
-          name: item.restaurant?.name,
-        },
+        restaurant: { name: item.restaurant?.name },
         calories: item.calories,
         price: item.price,
         tags: item.tags?.map((tag) => tag.name),
+        cuisine: filterTags(cuisineTags, item.tags),
+        restaurantType: filterTags(restaurantTypeTags, item.tags),
+        mealType: filterTags(mealTypeTags, item.tags),
+        foodType: filterTags(foodTypeTags, item.tags),
         fat: item.fat,
         carbs: item.carbs,
         protein: item.protein,
+        caloriesPerDollar: item.calories / item.price,
+        fatPerDollar: item.fat / item.price,
+        carbsPerDollar: item.carbs / item.price,
+        proteinPerDollar: item.protein / item.price,
         imageUrl: item.imageUrl,
       }));
 
