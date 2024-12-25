@@ -7,10 +7,8 @@ import {
   Navigate,
 } from "react-router-dom";
 import Header from "./components/Header";
-import RestaurantSearch from "./pages/RestaurantSearch";
-import Home from "./pages/Home";
-import Restaurant from "./pages/Restaurant/Restaurant";
 import MenuItemSearch from "./pages/MenuItemSearch";
+import About from "./pages/About";
 
 function App() {
   return (
@@ -20,10 +18,8 @@ function App() {
         <Header />
 
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/restaurants" element={<RestaurantSearch />} />
-          <Route path="/restaurants/:id" element={<Restaurant />} />
-          <Route path="/food" element={<MenuItemSearch />} />
+          <Route path="/" element={<MenuItemSearch />} />
+          <Route path="/about" element={<About />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>

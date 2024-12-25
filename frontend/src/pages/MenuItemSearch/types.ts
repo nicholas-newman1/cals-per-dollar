@@ -1,4 +1,12 @@
-import { Restaurant } from "../Restaurant/types";
+export interface Restaurant {
+  id: string;
+  name: string;
+  location?: string;
+  website?: string;
+  createdAt: string;
+  updatedAt: string;
+  imageUrl?: string;
+}
 
 export interface MenuItem {
   id: number;

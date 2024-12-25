@@ -1,8 +1,16 @@
 import React from "react";
-import { Typography, Button, Grid, Container, Box } from "@mui/material";
+import {
+  Typography,
+  Button,
+  Grid,
+  Container,
+  Box,
+  useMediaQuery,
+} from "@mui/material";
 import styled from "@emotion/styled";
 import { AttachMoney, FastForward, Lightbulb } from "@mui/icons-material";
 import { Link } from "react-router-dom";
+import theme from "../../theme";
 
 const PaddedBox = styled(Box)`
   padding: 6rem 0;
@@ -50,6 +58,9 @@ const ReadableTypography = styled(Typography)`
 `;
 
 const About: React.FC = () => {
+  const isSmDown = useMediaQuery((theme) => theme.breakpoints.down("sm"));
+  const isXsDown = useMediaQuery((theme) => theme.breakpoints.down("xs"));
+  const headingVariant = isXsDown ? "h6" : isSmDown ? "h5" : "h4";
   return (
     <div>
       <HeroGrid
@@ -58,15 +69,15 @@ const About: React.FC = () => {
         alignItems="center"
         justifyContent="center"
       >
-        <Container maxWidth="lg">
-          <Grid item container xs={12} spacing={2}>
-            <Grid item xs={12}>
-              <ReadableTypography variant="h3" color="white">
-                Find the Best Value for Your Meals, One Calorie at a Time
+        <Container maxWidth="lg" disableGutters>
+          <Grid container direction="column" spacing={2}>
+            <Grid item>
+              <ReadableTypography variant={headingVariant} color="white">
+                Higher CPD = More Value
               </ReadableTypography>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid item>
               <ReadableTypography variant="body1" maxWidth="40rem">
                 CalsPerDollar is here to help you maximize your meals by showing
                 you the best calorie-per-dollar options from your favorite
@@ -75,7 +86,7 @@ const About: React.FC = () => {
               </ReadableTypography>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid item>
               <Button
                 component={Link}
                 to="/"
@@ -88,7 +99,8 @@ const About: React.FC = () => {
           </Grid>
         </Container>
       </HeroGrid>
-      <PaddedBox>
+
+      <PaddedBox sx={{ backgroundColor: theme.palette.background.paper }}>
         <Container maxWidth="sm">
           <Heading>Our Mission</Heading>
           <Typography variant="body1" textAlign="center">
@@ -100,10 +112,10 @@ const About: React.FC = () => {
           </Typography>
         </Container>
       </PaddedBox>
-      <PaddedBox sx={{ backgroundColor: "#e3ffe5" }}>
+
+      <PaddedBox>
         <Container maxWidth="lg">
           <Heading>How It Works</Heading>
-
           <Grid item container xs={12} spacing={6}>
             <Grid item xs={12} md={4}>
               <StyledImg
@@ -145,7 +157,7 @@ const About: React.FC = () => {
         </Container>
       </PaddedBox>
 
-      <PaddedBox>
+      <PaddedBox sx={{ backgroundColor: theme.palette.background.paper }}>
         <Container maxWidth="lg">
           <Heading>Why Use CalsPerDollar?</Heading>
           <Grid item container xs={12} spacing={6}>
@@ -214,7 +226,7 @@ const About: React.FC = () => {
         </Container>
       </PaddedBox>
 
-      <PaddedBox sx={{ backgroundColor: "#e3ffe5" }}>
+      <PaddedBox>
         <Container maxWidth="lg">
           <Heading>Start Saving on Meals Today</Heading>
           <Typography
